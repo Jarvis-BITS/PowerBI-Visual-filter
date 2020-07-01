@@ -17,4 +17,5 @@ Filter Visual Working steps
 ------------ |
 Show only the applied filter value of dataset | 
 Output an error message for invalid list of search items(if any) | 
-
+----
+   <sup>Note: You need to have a text editor/IDE environment for the development, I recommend [Visual Studio Code](https://code.visualstudio.com/)
