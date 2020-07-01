@@ -1,4 +1,4 @@
-# PBI-Filter
+# PowerBI-Visual-Filter
 A custom visual developed for Microsoft PowerBI which filters PowerBI report by list and provides robust output(whether filtered keyword is present in database or not) accordingly.
 
 ### Steps for installing necessary development packages:
