@@ -25,4 +25,4 @@ You can learn more about using these tools in the following guides
 * [Usage Guide](https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visual-develop-tutorial#creating-a-custom-visual)
 * [Debugging Guide](https://microsoft.github.io/PowerBI-visuals/docs/how-to-guide/how-to-debug)
 ----
-   <sup>Note: You need to have a text editor/IDE environment for the development, I recommend [Visual Studio Code](https://code.visualstudio.com/)
+   <sup>Note: You need to have a text editor/IDE environment for development, I recommend [Visual Studio Code](https://code.visualstudio.com/)
