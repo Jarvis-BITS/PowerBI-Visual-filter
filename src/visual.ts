@@ -34,36 +34,55 @@ import IVisual = powerbi.extensibility.visual.IVisual;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
+import DataViewSingle = powerbi.DataViewSingle;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
 import { VisualSettings } from "./settings";
+import { data, transformData } from './data';
+
 export class Visual implements IVisual {
     private target: HTMLElement;
-    private updateCount: number;
+    // private host: IVisualHost;
+    // private updateCount: number;
     private settings: VisualSettings;
-    private textNode: Text;
+    // private textNode: Text;
+    private valueText: HTMLParagraphElement;
 
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
         this.target = options.element;
-        this.updateCount = 0;
+        // this.updateCount = 50;
         if (document) {
-            const new_p: HTMLElement = document.createElement("p");
-            new_p.appendChild(document.createTextNode("Update count:"));
-            const new_em: HTMLElement = document.createElement("em");
-            this.textNode = document.createTextNode(this.updateCount.toString());
-            new_em.appendChild(this.textNode);
-            new_p.appendChild(new_em);
-            this.target.appendChild(new_p);
+            // const new_p: HTMLElement = document.createElement("p");
+            // new_p.appendChild(document.createTextNode("Update count:"));
+            // const new_em: HTMLElement = document.createElement("em");
+            // this.textNode = document.createTextNode(this.updateCount.toString());
+            // new_em.appendChild(this.textNode);
+            // new_p.appendChild(new_em);
+            // this.target.appendChild(new_p);
+
         }
     }
 
     public update(options: VisualUpdateOptions) {
+        const dataView: DataView = options.dataViews[0];
+        const singleDataView: DataViewSingle = dataView.single;
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
         console.log('Visual update', options);
-        if (this.textNode) {
-            this.textNode.textContent = (this.updateCount++).toString();
+
+        transformData(options);
+        console.log(data);
+
+        if (!singleDataView ||
+            !singleDataView.value) {
+            return
         }
+
+        transformData(options);
+        this.valueText.innerText = singleDataView.value.toString()
+        // if (this.textNode) {
+        //     this.textNode.textContent = (this.updateCount++).toString();
+        // }
     }
 
     private static parseSettings(dataView: DataView): VisualSettings {

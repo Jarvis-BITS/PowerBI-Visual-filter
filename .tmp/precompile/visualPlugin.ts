@@ -7,7 +7,7 @@ var powerbi: any = window[powerbiKey];
 
 var visual217B56EDD81A4BE4A65CA8AF6A599C31_DEBUG: IVisualPlugin = {
     name: 'visual217B56EDD81A4BE4A65CA8AF6A599C31_DEBUG',
-    displayName: 'visual',
+    displayName: 'Advanced Filter',
     class: 'Visual',
     apiVersion: '2.6.0',
     create: (options: VisualConstructorOptions) => {
