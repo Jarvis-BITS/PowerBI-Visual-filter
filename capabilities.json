@@ -4,11 +4,6 @@
             "displayName": "Category Data",
             "name": "category",
             "kind": "Grouping"
-        },
-        {
-            "displayName": "Measure Data",
-            "name": "measure",
-            "kind": "Measure"
         }
     ],
     "objects": {
@@ -16,7 +11,7 @@
             "displayName": "Data colors",
             "properties": {
                 "defaultColor": {
-                    "displayName": "Default color",
+                    "displayName": "filter",
                     "type": {
                         "fill": {
                             "solid": {
@@ -47,7 +42,7 @@
                         "fill": {}
                     }
                 },
-                 "fontSize": {
+                "fontSize": {
                     "displayName": "Text Size",
                     "type": {
                         "formatting": {
@@ -60,23 +55,23 @@
     },
     "dataViewMappings": [
         {
+            "conditions": [
+                {
+                    "category": {
+                        "max": 1
+                    }
+                }
+            ],
             "categorical": {
                 "categories": {
                     "for": {
                         "in": "category"
                     },
                     "dataReductionAlgorithm": {
-                        "top": {}
-                    }
-                },
-                "values": {
-                    "select": [
-                        {
-                            "bind": {
-                                "to": "measure"
-                            }
+                        "top": {
+                            "count": 150000
                         }
-                    ]
+                    }
                 }
             }
         }
