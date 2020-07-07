@@ -27,64 +27,136 @@
 
 import "core-js/stable";
 import "./../style/visual.less";
-import powerbi from "powerbi-visuals-api";
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import IVisual = powerbi.extensibility.visual.IVisual;
-import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
+import * as tooltip from 'powerbi-visuals-utils-tooltiputils';
+import * as models from 'powerbi-models';
+
 import DataView = powerbi.DataView;
 import DataViewSingle = powerbi.DataViewSingle;
+import DataViewObjectPropertyIdentifier = powerbi.DataViewObjectPropertyIdentifier;
+
+import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
+import IVisual = powerbi.extensibility.visual.IVisual;
+import IVisualHost = powerbi.extensibility.IVisualHost;
+import FilterAction = powerbi.FilterAction;
+import FilterManager = powerbi
+import powerbi from "powerbi-visuals-api";
+import PrimitiveValue = powerbi.PrimitiveValue;
+
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualObjectInstance = powerbi.VisualObjectInstance;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
+
+
 
 import { VisualSettings } from "./settings";
 import { data, transformData } from './data';
+import { Primitive } from "d3";
+
+//const models: any = window["powerbi-models"];
+//Creating a class called Visual which stores all the reqd. variables like Buttons, SearchBoxes etc.
 
 export class Visual implements IVisual {
-    private target: HTMLElement;
-    // private host: IVisualHost;
-    // private updateCount: number;
+    private target: HTMLElement; //Target is the variable to store the targetted data i.e Part_Numbers in our case
+    //Creating buttons and boxes:
+    private searchBox: HTMLInputElement;
+    private searchButton: HTMLButtonElement;
+    private ClearButton: HTMLButtonElement;
+    private column: powerbi.DataViewMetadataColumn;  //Varaible to store column data 
     private settings: VisualSettings;
-    // private textNode: Text;
     private valueText: HTMLParagraphElement;
+    private host: powerbi.extensibility.visual.IVisual
+    private output: HTMLLIElement;
 
+    //Constructor is a function which gets automatically executed whenever the class object is initialized
     constructor(options: VisualConstructorOptions) {
-        console.log('Visual constructor', options);
         this.target = options.element;
-        // this.updateCount = 50;
-        if (document) {
-            // const new_p: HTMLElement = document.createElement("p");
-            // new_p.appendChild(document.createTextNode("Update count:"));
-            // const new_em: HTMLElement = document.createElement("em");
-            // this.textNode = document.createTextNode(this.updateCount.toString());
-            // new_em.appendChild(this.textNode);
-            // new_p.appendChild(new_em);
-            // this.target.appendChild(new_p);
+        this.target.innerHTML = `<div class = "filter-by-list">
+                                <form action="/action_page.php">
+                                <label for="search-field">Filter Input:</label>
+                                <textarea id="Enter your search" name="search-field" rows="4" cols="50">
+                                Incorrect Values:  
+                                </textarea>
+                                <br><br>
+                                <input type="submit" value="Submit">
+                                </form>
+                                </div>`;
+        this.searchBox = this.target.childNodes[0].childNodes[1] as HTMLInputElement;
+        this.searchBox.addEventListener("keydown", (e) => {
+            if (e.keyCode == 13) {
+                this.performSearch(this.searchBox.value)
+            }
+        });
+        this.searchButton = this.target.childNodes[0].childNodes[3] as HTMLButtonElement;
+        this.searchButton.addEventListener("click", () => this.performSearch(this.searchBox.value));
+        this.ClearButton = this.target.childNodes[0].childNodes[5] as HTMLButtonElement;
+        this.ClearButton.addEventListener("click", () => this.performSearch(''));
 
+        //this.host = options.host;
+    }
+    /** 
+         * Perfom search/filtering in a column
+         * @param {string} text - text to filter on
+         */
+
+    //Function to filter the report; it takes the user input as text(string)
+    public filter(text: string) {
+        const advancedFilter = new models.AdvancedFilter(
+            {
+                table: this.column.queryName.substr(0, this.column.queryName.indexOf('.')),
+                column: this.column.queryName.substr(this.column.queryName.indexOf('.') + 1)
+            },
+            "Or",
+            {
+                operator: "Contains",
+                value: "Power"
+            },
+            {
+                operator: "Contains",
+                value: "Microsoft"
+            }
+        )
+    };
+    public performSearch(text: string) {
+        if (this.column) {
+            const isBlank = ((text || "") + "").match(/^\s*$/);
+            const target = {
+                table: this.column.queryName.substr(0, this.column.queryName.indexOf('.')),
+                column: this.column.queryName.substr(this.column.queryName.indexOf('.') + 1)
+            };
+
+            let filter: any = null;
+            let action = FilterAction.remove;
+            if (!isBlank) {
+                filter = new models.AdvancedFilter(
+                    target,
+                    "And",
+                    {
+                        operator: "Contains",
+                        value: text
+                    }
+                );
+                action = FilterAction.merge;
+            }
+            //this.host.applyJsonFilter(filter, "general", "filter", action);
         }
+        this.searchBox.value = text;
     }
 
     public update(options: VisualUpdateOptions) {
+        const metadata = options.dataViews && options.dataViews[0] && options.dataViews[0].metadata;
+        const newColumn = metadata && metadata.columns && metadata.columns[0];
         const dataView: DataView = options.dataViews[0];
-        const singleDataView: DataViewSingle = dataView.single;
+
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
-        console.log('Visual update', options);
 
+        //Transformdata is a func which takes HTML parsed data as input and transforms it into manupilatable form i.e data.values which is an array storing part_number
         transformData(options);
-        console.log(data);
+        console.log(data.values);
 
-        if (!singleDataView ||
-            !singleDataView.value) {
-            return
-        }
-
-        transformData(options);
-        this.valueText.innerText = singleDataView.value.toString()
-        // if (this.textNode) {
-        //     this.textNode.textContent = (this.updateCount++).toString();
-        // }
     }
 
+    //Varaible to return 
     private static parseSettings(dataView: DataView): VisualSettings {
         return <VisualSettings>VisualSettings.parse(dataView);
     }
