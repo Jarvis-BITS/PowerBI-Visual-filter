@@ -30,7 +30,7 @@ You can learn more about using these tools in the following guides
    <sup>Note: You need to have a text editor/IDE environment for development, I recommend [Visual Studio Code](https://code.visualstudio.com/)
 
 #### Issues:
-- [ ] #1 Implement Multi-input filter model ([#1][i1])
+- [ ] Implement Multi-input filter model ([#2][i1])
 - [x] Implement output textbox to check incorrect values
 
 [i1]: https://github.com/Jarvis-BITS/PowerBI-Visual-filter/issues/2
