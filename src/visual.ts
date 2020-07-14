@@ -59,100 +59,97 @@ import { Primitive } from "d3";
 export class Visual implements IVisual {
     private target: HTMLElement; //Target is the variable to store the targetted data i.e Part_Numbers in our case
     //Creating buttons and boxes:
-    private searchBox: HTMLInputElement;
-    private searchButton: HTMLButtonElement;
-    private ClearButton: HTMLButtonElement;
+    private Box_Search: HTMLInputElement
+    private Button_Search: HTMLButtonElement;
+    private Button_Clear: HTMLButtonElement;
     private column: powerbi.DataViewMetadataColumn;  //Varaible to store column data 
     private settings: VisualSettings;
     private valueText: HTMLParagraphElement;
     private host: powerbi.extensibility.visual.IVisual
     private output: HTMLLIElement;
 
+
     //Constructor is a function which gets automatically executed whenever the class object is initialized
     constructor(options: VisualConstructorOptions) {
+
         this.target = options.element;
-        this.target.innerHTML = `<div class = "filter-by-list">
-                                <form action="/action_page.php">
-                                <label for="search-field">Filter Input:</label>
-                                <textarea id="Enter your search" name="search-field" rows="4" cols="50">
-                                Incorrect Values:  
-                                </textarea>
-                                <br><br>
-                                <input type="submit" value="Submit">
-                                </form>
+        var x = document.createElement("textarea");
+        document.body.appendChild(x);
+        function Search() {
+            alert("I am an alert box!");
+        }
+
+        this.target.innerHTML = `<div class = "invalid-value-search"><!--
+                                <input style="height:50px;font-size:10pt;" id="myInput" aria-label="Enter your search" type="text" size="40" placeholder="Search for invalid values">
+                                <br>
+                                <button class="c-glyph search-button" onclick="Search()" class="btn btn-primary py-3 px-5">Invalid item search</button>
+                                <button class="c-glyph clear-button" name="clear-button" onclick="document.getElementById('myInput').value = ''">Clear</button>
+                                <p id="demo"></p>
+                                <input type="submit" value=":( Work in progress" onclick="myFunction()">-->
+                                <p id="demo"></p>
+Enter hourly Rate: <input type="text" id="payrate"><br>
+Enter hours: <input type="text" id="hours"><br>
+<input type="submit" value="Yearly Salary" onclick="myFunction()"
                                 </div>`;
-        this.searchBox = this.target.childNodes[0].childNodes[1] as HTMLInputElement;
-        this.searchBox.addEventListener("keydown", (e) => {
+
+
+
+
+
+        this.Box_Search = this.target.childNodes[0].childNodes[1] as HTMLInputElement;
+        this.Box_Search.addEventListener("keydown", (e) => {
             if (e.keyCode == 13) {
-                this.performSearch(this.searchBox.value)
+                //this.invalid_search(this.Box_Search.value);
             }
         });
-        this.searchButton = this.target.childNodes[0].childNodes[3] as HTMLButtonElement;
-        this.searchButton.addEventListener("click", () => this.performSearch(this.searchBox.value));
-        this.ClearButton = this.target.childNodes[0].childNodes[5] as HTMLButtonElement;
-        this.ClearButton.addEventListener("click", () => this.performSearch(''));
+        this.Button_Search = this.target.childNodes[0].childNodes[3] as HTMLButtonElement;
+        //this.Button_Search.addEventListener("click", () => this.invalid_search(this.Box_Search.value));
+        this.Button_Clear = this.target.childNodes[0].childNodes[5] as HTMLButtonElement;
 
-        //this.host = options.host;
     }
+
     /** 
-         * Perfom search/filtering in a column
-         * @param {string} text - text to filter on
-         */
+    * Perfom search/filtering in a column
+    * @param {string} text - text to filter on
+    */
 
-    //Function to filter the report; it takes the user input as text(string)
-    public filter(text: string) {
-        const advancedFilter = new models.AdvancedFilter(
-            {
-                table: this.column.queryName.substr(0, this.column.queryName.indexOf('.')),
-                column: this.column.queryName.substr(this.column.queryName.indexOf('.') + 1)
-            },
-            "Or",
-            {
-                operator: "Contains",
-                value: "Power"
-            },
-            {
-                operator: "Contains",
-                value: "Microsoft"
+    //Function to perform invalidation search
+    public invalid_search(text: string, Values) {
+        var numArr = text.split(',');
+        var data_len = Values.length();
+        var input_len = numArr.length()
+        const invalid_items = [];
+        var i, j;
+        var flag = 0;
+        // Below code loops through data to check if input value is present in report data
+        // Assumption: Input value is not present in data i.e input value is invalid
+        // Therefore if input value is valid, flag is set to 1
+        for (i = 0; i < input_len; i++, flag = 0) {
+            for (j = 0; j < data_len; j++) {
+                if (Values[j] === numArr[i]) {
+                    flag = 1;
+                    break;
+                }
+                if (flag) {
+                    invalid_items.push(numArr[i]);
+                }
             }
-        )
-    };
-    public performSearch(text: string) {
-        if (this.column) {
-            const isBlank = ((text || "") + "").match(/^\s*$/);
-            const target = {
-                table: this.column.queryName.substr(0, this.column.queryName.indexOf('.')),
-                column: this.column.queryName.substr(this.column.queryName.indexOf('.') + 1)
-            };
-
-            let filter: any = null;
-            let action = FilterAction.remove;
-            if (!isBlank) {
-                filter = new models.AdvancedFilter(
-                    target,
-                    "And",
-                    {
-                        operator: "Contains",
-                        value: text
-                    }
-                );
-                action = FilterAction.merge;
-            }
-            //this.host.applyJsonFilter(filter, "general", "filter", action);
         }
-        this.searchBox.value = text;
+        return invalid_items;
+
     }
 
     public update(options: VisualUpdateOptions) {
-        const metadata = options.dataViews && options.dataViews[0] && options.dataViews[0].metadata;
-        const newColumn = metadata && metadata.columns && metadata.columns[0];
-        const dataView: DataView = options.dataViews[0];
+        transformData(options);
+        console.log(data.values);
+        let searchText = "";
 
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
 
-        //Transformdata is a func which takes HTML parsed data as input and transforms it into manupilatable form i.e data.values which is an array storing part_number
-        transformData(options);
-        console.log(data.values);
+        this.Box_Search.value = searchText;
+
+        //Transformdata is a func which gives 
+
 
     }
 
