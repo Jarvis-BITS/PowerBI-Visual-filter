@@ -32,6 +32,6 @@ You can learn more about using these tools in the following guides
 
 #### Issues:
 - [ ] Implement Multi-input filter model ([#2][i1])
-- [x] Implement output textbox to check incorrect values
+- [ ] Implement output textbox to check incorrect values
 
 [i1]: https://github.com/Jarvis-BITS/PowerBI-Visual-filter/issues/2
