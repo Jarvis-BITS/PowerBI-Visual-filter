@@ -78,33 +78,33 @@ export class Visual implements IVisual {
         function Search() {
             alert("I am an alert box!");
         }
+        function output() {
+            document.getElementById("demo").innerHTML = "Output";
+        }
 
-        this.target.innerHTML = `<div class = "invalid-value-search"><!--
-                                <input style="height:50px;font-size:10pt;" id="myInput" aria-label="Enter your search" type="text" size="40" placeholder="Search for invalid values">
+        //code for the HTML output visual i.e Textbox, buttons etc.
+
+        this.target.innerHTML = `<div class = "invalid-value-search">
+                                <input style="height:50px;font-size:10pt;" id="myInput" aria-label="Enter your search" type="text" size="40" placeholder="Search for invalid Part_nos">
                                 <br>
-                                <button class="c-glyph search-button" onclick="Search()" class="btn btn-primary py-3 px-5">Invalid item search</button>
-                                <button class="c-glyph clear-button" name="clear-button" onclick="document.getElementById('myInput').value = ''">Clear</button>
-                                <p id="demo"></p>
-                                <input type="submit" value=":( Work in progress" onclick="myFunction()">-->
-                                <p id="demo"></p>
-Enter hourly Rate: <input type="text" id="payrate"><br>
-Enter hours: <input type="text" id="hours"><br>
-<input type="submit" value="Yearly Salary" onclick="myFunction()"
+                                <button class="c-glyph search-button" onclick="document.getElementById('myInput').value='' class="btn btn-primary py-3 px-5">Invalid item search</button>
+                                <button class="c-glyph clear-button" name="clear-button" onclick="document.getElementById('myInput').value = ''>Clear</button>
+
                                 </div>`;
-
-
 
 
 
         this.Box_Search = this.target.childNodes[0].childNodes[1] as HTMLInputElement;
         this.Box_Search.addEventListener("keydown", (e) => {
             if (e.keyCode == 13) {
-                //this.invalid_search(this.Box_Search.value);
+                this.invalid_search(this.Box_Search.value); 
             }
         });
         this.Button_Search = this.target.childNodes[0].childNodes[3] as HTMLButtonElement;
+        //Backup option for 
         //this.Button_Search.addEventListener("click", () => this.invalid_search(this.Box_Search.value));
         this.Button_Clear = this.target.childNodes[0].childNodes[5] as HTMLButtonElement;
+      
 
     }
 
@@ -113,12 +113,14 @@ Enter hours: <input type="text" id="hours"><br>
     * @param {string} text - text to filter on
     */
 
-    //Function to perform invalidation search
-    public invalid_search(text: string, Values) {
-        var numArr = text.split(',');
-        var data_len = Values.length();
+    
+
+    //Function to perform invalidation search, text is the user input for validation & Part_nos is the array of part numbers
+    public invalid_search(text: string, Part_nos) {
+        var numArr = text.split(','); //Splitting user input text by commas and storing it in an array called numArr
+        var data_len = Part_nos.length();
         var input_len = numArr.length()
-        const invalid_items = [];
+        const invalid_items = []; //Variable to store invalid items list
         var i, j;
         var flag = 0;
         // Below code loops through data to check if input value is present in report data
@@ -126,7 +128,7 @@ Enter hours: <input type="text" id="hours"><br>
         // Therefore if input value is valid, flag is set to 1
         for (i = 0; i < input_len; i++, flag = 0) {
             for (j = 0; j < data_len; j++) {
-                if (Values[j] === numArr[i]) {
+                if (Part_nos[j] === numArr[i]) {
                     flag = 1;
                     break;
                 }
@@ -140,20 +142,24 @@ Enter hours: <input type="text" id="hours"><br>
     }
 
     public update(options: VisualUpdateOptions) {
+        
+        //Transformdata is a func called from data.ts which takes in the report data and captures part numbers in form of data.Part_nos as an array
         transformData(options);
-        console.log(data.values);
+        console.log(data.Part_nos); //Part numbers get outputted onto developers tools/console in chrome settings
         let searchText = "";
 
         this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
+        
+        // Note:Alert boxes don't work in PowerBI, find another way for reliable output
+        // alert("I am an alert box");
 
         this.Box_Search.value = searchText;
 
-        //Transformdata is a func which gives 
+        
 
 
     }
 
-    //Varaible to return 
     private static parseSettings(dataView: DataView): VisualSettings {
         return <VisualSettings>VisualSettings.parse(dataView);
     }
