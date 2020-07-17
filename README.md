@@ -1,4 +1,4 @@
-# PowerBI-Visual-Filter for Boston Scientific <br>
+# PowerBI-Visual-Filter <br>
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ## For release 1.0, the visual is first focusing on showing invalid number of items:
 <br>
