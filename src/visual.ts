@@ -111,6 +111,7 @@ export class Visual implements IVisual {
     /** 
     * Perfom search/filtering in a column
     * @param {string} text - text to filter on
+    * @return {invalid_items[]}
     */
 
     
